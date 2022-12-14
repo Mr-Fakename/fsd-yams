@@ -1,10 +1,11 @@
 // Setup
 const express = require("express");
 const app = express();
-app.set("view engine", "ejs");
-
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
+
+app.set("view engine", "ejs");
+app.use(express.urlencoded({extended: false}));
 dotenv.config();
 
 // Mongo DB connection
@@ -19,3 +20,4 @@ app.use("", require("./routes/index"))
 const PORT = process.env.PORT || 8000;
 
 app.listen(PORT, console.log("Server running on port " + PORT))
+
