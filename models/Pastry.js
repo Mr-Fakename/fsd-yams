@@ -13,6 +13,12 @@ const PastrySchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    winnings: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Winning"
+        }
+    ]
 });
 
 const Pastry = mongoose.model("Pastry", PastrySchema);

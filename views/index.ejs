@@ -3,7 +3,40 @@
     <div class="row justify-content-center">
         <div class="col-md-8 mt-5">
 
-            <h1>Bienvenue</h1>
+            <h1>Bienvenue, <%= (!!locals.user) ? user.name : "" %></h1>
+
+            <% if (locals.total > 0) { %>
+                <h2>Les pâtisseries à gagner</h2>
+                <% for(pastry of pastries) { %>
+                    <% if(pastry.quantity > 0) { %>
+                        <li><%= pastry.name %> - <%= pastry.quantity %></li>
+                    <% } %>
+                <% } %>
+                <% if (locals.isLoggedIn && !locals.user.participated && !played) { %>
+                    <button id="button" onclick="play()">Jouer</button>
+                <% } else if (locals.isLoggedIn && locals.user.participated){ %>
+                    <h3>Vous avez déjà joué</h3>
+                    <% if (locals.winnings) { %>
+                        <h4>
+                            Vous avez gagné : <%= locals.winnings.pastries %>
+                            <br>
+                            le <%= locals.winnings.date %>
+                        </h4>
+                    <% } else { %>
+                        <h4>Vous n'avez rien gagné</h4>
+                    <% } %>
+                <% } else { %>
+                    <div class="login-register">
+                        <a href="/register">Inscription</a>
+                        <a href="/login">Connexion</a>
+                    </div>
+                <% } %>
+                <p id="dice"></p>
+                <p id="results"></p>
+                <p id="winnings"></p>
+            <% } else { %>
+                <h2>Le jeu est malheureusement terminé, merci pour votre participation !</h2>
+            <% } %>
 
         </div>
     </div>
@@ -11,3 +44,24 @@
 
 </body>
 </html>
+
+<script>
+    let played = false;
+
+    function play() {
+        const xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function () {
+            if (xmlhttp.readyState === 4 && xmlhttp.status === 200) {
+                const data = JSON.parse(xmlhttp.response)
+                document.getElementById("dice").innerHTML = data.dice
+                document.getElementById("results").innerHTML = data.results ? data.results : "Perdu !"
+                document.getElementById("winnings").innerHTML =
+                    data.winnings ? `Félicitations, vous avez gagné : ${data.winnings}` : "Vous n'avez rien gagné"
+            }
+        }
+        xmlhttp.open("GET", "/play", true);
+        xmlhttp.send();
+
+        played = true;
+    }
+</script>
